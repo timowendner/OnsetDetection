@@ -32,14 +32,13 @@ class OnsetDataset(Dataset):
 
         self.waveforms = waveforms
         self.device = device
-        self.length = config.audio_length
-        self.diffusion = diffusion
 
     def __len__(self):
         return len(self.waveforms)
 
     def __getitem__(self, idx):
-        label, waveform = self.waveforms[idx]
+        waveform, sr, onsets = self.waveforms[idx]
+
         waveform = waveform.to(self.device)
 
         # Apply gain
