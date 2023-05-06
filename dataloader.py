@@ -10,7 +10,7 @@ import os
 
 class OnsetDataset(Dataset):
     def __init__(self, config, device: torch.device):
-        files = glob.glob(os.path.join(config.data_path, '*.wav'))
+        files = glob.glob(os.path.join(config.data_path, '*.wav'))[:10]
         waveforms = []
         for path in files:
             # load and normalize the audio file
@@ -24,14 +24,16 @@ class OnsetDataset(Dataset):
             # transform the text into float values
             onsets = []
             for i in text:
-                onsets.append(float(i.replace('\n', '')))
-            waveforms.append(waveform, sr, onsets)
+                onsets.append(float(i.replace('\n', '')) * sr)
+            waveforms.append((waveform, sr, onsets))
 
         if len(waveforms) == 0:
             raise AttributeError('Data-path seems to be empty')
 
         self.waveforms = waveforms
         self.device = device
+        self.length = config.length
+        self.sigma = config.targetSD
 
     def __len__(self):
         return len(self.waveforms)
@@ -39,20 +41,27 @@ class OnsetDataset(Dataset):
     def __getitem__(self, idx):
         waveform, sr, onsets = self.waveforms[idx]
 
-        waveform = waveform.to(self.device)
+        # find a random index and start from this point
+        index = np.random.randint(low=0, high=waveform.shape[1])
 
-        # Apply gain
-        waveform = waveform * (1 - np.random.normal(0, 0.15)**2)
+        # create a waveform of specified length, with indexing and zero padding
+        waveform = torch.nn.functional.pad(
+            waveform[:, index: index + self.length],
+            (0, max(0, self.length + index - waveform.shape[1]))
+        )
 
-        # create a different starting point and roll the data over
-        waveform = torch.roll(waveform, np.random.randint(waveform.shape[0]))
+        # create the target vector with the resulting probabilities.
+        onsets = [onset - index for onset in onsets if index <=
+                  onset < index + self.length]
+        targets = torch.zeros_like(waveform)
+        for onset in onsets:
+            current = torch.arange(0, self.length)
+            current = 1 / (self.sigma * np.sqrt(2 * np.pi)) * \
+                np.exp(-0.5 * ((current - onset) / self.sigma)**2)
+            targets = torch.maximum(targets, current)
 
-        # create the diffusion
-        max_timestamp = self.diffusion.steps
-        timestamp = np.random.randint(1, max_timestamp)
-        x_t, noise = self.diffusion(waveform, timestamp)
+        # normalize the targets
+        if onsets:
+            targets = targets / torch.max(targets)
 
-        x_t = x_t.to(self.device)
-        noise = noise.to(self.device)
-
-        return x_t, noise, timestamp, label
+        return waveform.to(self.device), targets.to(self.device)
