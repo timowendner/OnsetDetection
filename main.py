@@ -84,7 +84,8 @@ def main():
 
     # create the model
     model, config, optimizer = create_model(config, load=args.load, lr=args.lr)
-    model = model.to(config.device)
+    model = model.to(device)
+    print(model.device)
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -95,7 +96,7 @@ def main():
 
     # train the network
     if args.train:
-        model, config, optimizer = train_network(model, config, optimizer)
+        train_network(model, config, optimizer)
 
 
 if __name__ == '__main__':
