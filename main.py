@@ -10,6 +10,7 @@ import argparse
 import datetime
 import time
 import os
+import matplotlib.pyplot as plt
 
 from utils import create_model, save_model
 from dataloader import OnsetDataset
@@ -18,18 +19,28 @@ from model import UNet
 
 @torch.no_grad()
 def test_network(model, loader):
+    model.eval()
     mse_list = []
-    for i, (model_input, targets) in enumerate(loader):
-        model.eval()
+    for model_input, targets in loader:
+        prediction = model(model_input)
+        targets = targets.view(targets.size(0), -1)
+        prediction = prediction.view(prediction.size(0), -1)
 
-        with torch.no_grad():
-            prediction = model(model_input)
-            targets = targets.view(targets.size(0), -1)
-            prediction = prediction.view(prediction.size(0), -1)
+        # calculate the MSE
+        mse = F.mse_loss(prediction, targets, reduction='none')
+        mse_list.extend(mse.mean(dim=1).tolist())
 
-            # calculate the MSE
-            mse = F.mse_loss(prediction, targets, reduction='none')
-            mse_list.extend(mse.mean(dim=1).tolist())
+    # plot the predictions
+    model_input = model_input[1, 1]
+    prediction = prediction[1, 1]
+    targets = targets[1, 1]
+
+    plt.figure(figsize=(20, 5))
+    plt.plot(model_input, label='model input')
+    plt.plot(prediction, label='prediction')
+    plt.plot(targets, label='target')
+    plt.legend()
+    plt.show()
 
     # Calculate overall MSE
     return sum(mse_list) / len(mse_list)
