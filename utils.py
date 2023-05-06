@@ -18,10 +18,16 @@ def save_model(model, optimizer, config):
     # save the model
     filepath = join(config.model_path, f"{config.model_name}_{time_now}.p")
 
+    # define the config arguments to be saved
+    change_config = ("data_length", "data_targetSD", "model_layers",
+                     "model_out", "model_kernel", "model_scale")
+    change_config = {arg: getattr(config, arg) for arg in change_config}
+
+    # save everything
     torch.save({
         'model': model.state_dict(),
         'optimizer': optimizer.state_dict(),
-        'config': config,
+        'config': change_config,
     }, filepath)
 
 
@@ -44,10 +50,7 @@ def create_model(config, load=False, lr=False):
     loaded = torch.load(filepath)
 
     # copy the config file
-    change_config = ("data_length", "data_targetSD", "model_layers",
-                     "model_out", "model_kernel", "model_scale")
-    for argument in change_config:
-        value = getattr(loaded['config'], argument)
+    for argument, value in loaded['config'].items():
         setattr(config, argument, value)
 
     model = UNet(config).to(config.device)

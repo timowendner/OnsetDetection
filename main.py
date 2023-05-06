@@ -15,6 +15,21 @@ from dataloader import OnsetDataset
 from model import UNet
 
 
+@torch.no_grad()
+def test_network(model, loader):
+    RMSE, n = 0, 0
+    for i, (model_input, targets) in enumerate(loader.dataset):
+        model.eval()
+
+        prediction = model(model_input)
+
+        # calculate the RMSE
+        MSE = np.square(np.subtract(targets, prediction)).mean()
+        RMSE += np.sqrt(MSE)
+        n += 1
+    print(f"After the epoch the RMSE is: {RMSE / n:.4f}")
+
+
 def train_network(model, config, optimizer):
     # create the dataset
     dataset = OnsetDataset(config, config.device)
@@ -60,11 +75,13 @@ def train_network(model, config, optimizer):
 
         # add the number of epochs
         config.current_epoch += 1
+        test_network(model, test_loader)
 
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= config.save_time or epoch == config.num_epochs - 1:
             save_model(model, optimizer, config)
             start_time = time.time()
+
     return model, config, optimizer
 
 
