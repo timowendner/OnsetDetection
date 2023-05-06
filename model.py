@@ -68,7 +68,8 @@ class UNet(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
 
-        print(self.down)
+        print(next(self.parameters()).device)
+        print(x.device)
         # apply the encoder
         encoder = []
         for layer in self.down:
