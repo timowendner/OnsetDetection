@@ -87,6 +87,8 @@ def main():
     # create the model
     model, config, optimizer = create_model(config, load=args.load, lr=args.lr)
     model = model.to(device)
+    if torch.cuda.is_available():
+        model.cuda()
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
