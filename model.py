@@ -65,7 +65,7 @@ class UNet(nn.Module):
             output.append(nn.ReLU(inplace=True))
             last = channel
         output.append(nn.Conv1d(32, 1, kernel_size=kernel, padding=kernel))
-        self.output = nn.Sequential(output)
+        self.output = nn.Sequential(*output)
 
     def forward(self, x: Tensor) -> Tensor:
         # apply the encoder
