@@ -1,4 +1,5 @@
 {
+    "model_name": "start",
     "data_path": "/Users/timowendner/Programming/Semester 4/Music Processing/train",
     "model_path": "/Users/timowendner/Programming/Semester 4/Music Processing/models",
     "output_path": "/Users/timowendner/Programming/Semester 4/Music Processing/output",

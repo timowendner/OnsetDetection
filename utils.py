@@ -25,13 +25,14 @@ def save_model(model, optimizer, config):
     }, filepath)
 
 
-def create_model(optimizer, config, load=False):
+def create_model(optimizer, config, load=False, lr=False):
     if not exists(config.model_path):
         os.makedirs(config.model_path)
 
     files = [join(config.model_path, f) for f in os.listdir(
         config.model_path) if isfile(join(config.model_path, f))]
     files = sorted(files, key=getmtime)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 
     if not load or len(files) == 0:
         model = UNet(config)
@@ -43,7 +44,10 @@ def create_model(optimizer, config, load=False):
 
     loaded = torch.load(filepath)
     model.load_state_dict(loaded['model'])
-    optimizer.load_state_dict(loaded['optimizer'])
+    if lr:
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    else:
+        optimizer.load_state_dict(loaded['optimizer'])
 
     # copy the config file
     change_config = ("data_length", "data_targetSD", "model_layers",

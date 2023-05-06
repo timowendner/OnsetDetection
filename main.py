@@ -83,8 +83,7 @@ def main():
     config.device = device
 
     # create the model
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
-    model, config, optimizer = create_model(optimizer, config, load=args.load)
+    model, config, optimizer = create_model(config, load=args.load, lr=args.lr)
     model.to(device)
 
     # print the number of trainable parameters
@@ -107,6 +106,8 @@ if __name__ == '__main__':
                         help='Path to the configuration file')
     parser.add_argument('--load', action='store_true',
                         help='load a model')
+    parser.add_argument('--lr', type=float, default=False,
+                        help='change the learning rate')
     args = parser.parse_args()
 
     main()
