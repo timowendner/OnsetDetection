@@ -71,7 +71,7 @@ class UNet(nn.Module):
         # apply the encoder
         encoder = []
         for layer in self.down:
-            print(layer.weight.device)
+            print(x.device)
             x = layer(x)
             encoder.append(x)
             x = self.pool(x)
