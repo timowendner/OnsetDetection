@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch import nn
+import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, random_split
 import pickle as pkl
 import json
@@ -17,17 +18,21 @@ from model import UNet
 
 @torch.no_grad()
 def test_network(model, loader):
-    RMSE, n = 0, 0
-    for i, (model_input, targets) in enumerate(loader.dataset):
+    mse_list = []
+    for i, (model_input, targets) in enumerate(loader):
         model.eval()
 
-        prediction = model(model_input)
+        with torch.no_grad():
+            prediction = model(model_input)
+            targets = targets.view(targets.size(0), -1)
+            prediction = prediction.view(prediction.size(0), -1)
 
-        # calculate the RMSE
-        MSE = np.square(np.subtract(targets, prediction)).mean()
-        RMSE += np.sqrt(MSE)
-        n += 1
-    print(f"After the epoch the RMSE is: {RMSE / n:.4f}")
+            # calculate the MSE
+            mse = F.mse_loss(prediction, targets, reduction='none')
+            mse_list.extend(mse.mean(dim=1).tolist())
+
+    # Calculate overall MSE
+    return sum(mse_list) / len(mse_list)
 
 
 def train_network(model, config, optimizer):
@@ -59,7 +64,6 @@ def train_network(model, config, optimizer):
         # loop through the training loader
         for i, (model_input, targets) in enumerate(train_loader):
             # Forward pass
-            model = model.to(config.device)
             outputs = model(model_input)
             loss = mse(outputs, targets)
 
