@@ -32,8 +32,8 @@ class OnsetDataset(Dataset):
 
         self.waveforms = waveforms
         self.device = device
-        self.length = config.length
-        self.sigma = config.targetSD
+        self.length = config.data_length
+        self.sigma = config.data_targetSD
 
     def __len__(self):
         return len(self.waveforms)
