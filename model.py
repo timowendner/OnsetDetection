@@ -43,21 +43,21 @@ class UNet(nn.Module):
 
         # define the encoder
         last = 1
-        self.down = []
+        self.down = nn.ModuleList([])
         for channel in config.model_layers:
             layer = dual(last, channel, kernel=kernel)
             self.down.append(layer)
             last = channel
 
         # define the decoder
-        self.up = []
+        self.up = nn.ModuleList([])
         for channel in reversed(config.model_layers):
             layer = up(last, channel, scale=scale, kernel=kernel)
             self.up.append(layer)
             last = channel * 2
 
         # define the output layer
-        output = []
+        output = nn.ModuleList([])
         for channel in config.model_out:
             conv = nn.Conv1d(
                 last, channel, kernel_size=kernel, padding=kernel//2)
