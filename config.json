@@ -11,5 +11,6 @@
     "model_scale": 4,
     "lr": 0.001,
     "save_time": 300,
-    "train_split": 0.95
+    "train_split": 0.95,
+    "num_epochs": 1000
 }

@@ -64,13 +64,14 @@ class UNet(nn.Module):
             output.append(conv)
             output.append(nn.ReLU(inplace=True))
             last = channel
-        output.append(nn.Conv1d(32, 1, kernel_size=kernel, padding=kernel))
+        output.append(nn.Conv1d(last, 1, kernel_size=kernel, padding=kernel))
         self.output = nn.Sequential(*output)
 
     def forward(self, x: Tensor) -> Tensor:
         # apply the encoder
         encoder = []
         for layer in self.down:
+            print(layer.weight.device)
             x = layer(x)
             encoder.append(x)
             x = self.pool(x)
