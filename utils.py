@@ -25,7 +25,7 @@ def save_model(model, optimizer, config):
     }, filepath)
 
 
-def create_model(optimizer, config, load=False, lr=False):
+def create_model(config, load=False, lr=False):
     if not exists(config.model_path):
         os.makedirs(config.model_path)
 
