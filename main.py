@@ -85,7 +85,6 @@ def main():
 
     # create the model
     model, config, optimizer = create_model(config, load=args.load, lr=args.lr)
-    model.to(device)
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
