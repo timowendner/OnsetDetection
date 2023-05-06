@@ -79,7 +79,8 @@ def train_network(model, config, optimizer):
 
         # add the number of epochs
         config.current_epoch += 1
-        test_network(model, test_loader)
+        test_error = test_network(model, test_loader)
+        print(f'The test mse is: {test_error}')
 
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= config.save_time or epoch == config.num_epochs - 1:
