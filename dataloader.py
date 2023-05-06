@@ -64,7 +64,4 @@ class OnsetDataset(Dataset):
         if onsets:
             targets = targets / torch.max(targets)
 
-        print(targets.shape)
-        print(torch.max(targets), torch.min(targets))
-
         return waveform.to(self.device), targets.to(self.device)

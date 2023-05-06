@@ -31,13 +31,12 @@ def test_network(model, loader):
         mse_list.extend(mse.mean(dim=1).tolist())
 
     # plot the predictions
-    print(model_input.shape, prediction.shape, targets.shape)
     model_input = model_input[0, 0].cpu().numpy()
-    prediction = prediction[0, 0].cpu().numpy()
-    targets = targets[0, 0].cpu().numpy()
+    prediction = prediction[0].cpu().numpy()
+    targets = targets[0].cpu().numpy()
 
     plt.figure(figsize=(10, 3))
-    # plt.plot(model_input, label='model input')
+    plt.plot(model_input, label='model input')
     plt.plot(prediction, label='prediction')
     plt.plot(targets, label='target')
     plt.legend()
