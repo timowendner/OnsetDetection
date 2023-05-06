@@ -44,6 +44,7 @@ def train_network(model, config, optimizer):
         # loop through the training loader
         for i, (model_input, targets) in enumerate(train_loader):
             # Forward pass
+            model = model.to(config.device)
             outputs = model(model_input)
             loss = mse(outputs, targets)
 

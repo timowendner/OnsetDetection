@@ -72,9 +72,6 @@ class UNet(nn.Module):
 
         print(next(self.parameters()).device)
         print(x.device)
-        print(self.down)
-        print(self.up)
-        print(self.output)
         # apply the encoder
         encoder = []
         for layer in self.down:
