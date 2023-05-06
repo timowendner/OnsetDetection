@@ -59,11 +59,13 @@ class UNet(nn.Module):
         # define the output layer
         output = []
         for channel in config.model_out:
-            conv = nn.Conv1d(last, channel, kernel_size=kernel, padding=kernel)
+            conv = nn.Conv1d(
+                last, channel, kernel_size=kernel, padding=kernel//2)
             output.append(conv)
             output.append(nn.ReLU(inplace=True))
             last = channel
-        output.append(nn.Conv1d(last, 1, kernel_size=kernel, padding=kernel))
+        output.append(
+            nn.Conv1d(last, 1, kernel_size=kernel, padding=kernel//2))
         self.output = nn.Sequential(*output)
 
     def forward(self, x: Tensor) -> Tensor:
