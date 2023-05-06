@@ -31,9 +31,9 @@ def test_network(model, loader):
         mse_list.extend(mse.mean(dim=1).tolist())
 
     # plot the predictions
-    model_input = model_input[1, 1]
-    prediction = prediction[1, 1]
-    targets = targets[1, 1]
+    model_input = model_input[0, 0]
+    prediction = prediction[0, 0]
+    targets = targets[0, 0]
 
     plt.figure(figsize=(20, 5))
     plt.plot(model_input, label='model input')
