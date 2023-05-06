@@ -36,7 +36,7 @@ def test_network(model, loader):
     targets = targets[0, 0].cpu().numpy()
 
     plt.figure(figsize=(10, 3))
-    plt.plot(model_input, label='model input')
+    # plt.plot(model_input, label='model input')
     plt.plot(prediction, label='prediction')
     plt.plot(targets, label='target')
     plt.legend()
