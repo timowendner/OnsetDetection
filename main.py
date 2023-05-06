@@ -101,6 +101,7 @@ def main():
     config = Config()
     for key, data in config_json.items():
         setattr(config, key, data)
+    config.current_epoch = 0
 
     # set the device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
