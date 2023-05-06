@@ -10,7 +10,7 @@ import os
 
 class OnsetDataset(Dataset):
     def __init__(self, config, device: torch.device):
-        files = glob.glob(os.path.join(config.data_path, '*.wav'))[:10]
+        files = glob.glob(os.path.join(config.data_path, '*.wav'))
         waveforms = []
         for path in files:
             # load and normalize the audio file
@@ -63,7 +63,5 @@ class OnsetDataset(Dataset):
         # normalize the targets
         if onsets:
             targets = targets / torch.max(targets)
-
-        print(waveform.shape, targets.shape)
 
         return waveform.to(self.device), targets.to(self.device)

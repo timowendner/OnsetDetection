@@ -69,20 +69,15 @@ class UNet(nn.Module):
         self.output = nn.Sequential(*output)
 
     def forward(self, x: Tensor) -> Tensor:
-
-        print(next(self.parameters()).device)
-        print(x.device)
         # apply the encoder
         encoder = []
         for layer in self.down:
-            print(x.shape, layer)
             x = layer(x)
             encoder.append(x)
             x = self.pool(x)
 
         # apply the decoder
         for layer in self.up:
-            print(x.shape, layer)
             x = layer(x)
             x = torch.cat([encoder.pop(), x], 1)
 
