@@ -16,7 +16,7 @@ from dataloader import OnsetDataset
 
 def train_network(model, config, optimizer):
     # create the dataset
-    dataset = OnsetDataset(config, model.device)
+    dataset = OnsetDataset(config, config.device)
 
     # split the dataset into train and test
     train_size = int(len(dataset) * config.train_split)

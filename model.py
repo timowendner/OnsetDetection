@@ -35,7 +35,6 @@ def up(in_channel, out_channel, scale=2, kernel=9):
 class UNet(nn.Module):
     def __init__(self, config):
         super(UNet, self).__init__()
-        self.device = config.device
 
         # define the pooling layer
         scale = config.model_scale
