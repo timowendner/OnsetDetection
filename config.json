@@ -1,5 +1,9 @@
 {
     "data_path": "/Users/timowendner/Programming/Semester 4/Music Processing/train",
-    "length": 32000,
-    "targetSD": 500
+    "data_length": 32000,
+    "data_targetSD": 500,
+    "model_layers": [32, 48, 64],
+    "model_out": [64, 32, 16],
+    "model_kernel": 9,
+    "model_scale": 4
 }
