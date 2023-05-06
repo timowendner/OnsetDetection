@@ -32,7 +32,7 @@ def create_model(config, load=False, lr=False):
     files = [join(config.model_path, f) for f in os.listdir(
         config.model_path) if isfile(join(config.model_path, f))]
     files = sorted(files, key=getmtime)
-    model = UNet(config)
+    model = UNet(config).to(config.device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 
     if not load or len(files) == 0:
@@ -50,7 +50,7 @@ def create_model(config, load=False, lr=False):
         value = getattr(loaded['config'], argument)
         setattr(config, argument, value)
 
-    model = UNet(config)
+    model = UNet(config).to(config.device)
     model.load_state_dict(loaded['model'])
     if lr:
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
