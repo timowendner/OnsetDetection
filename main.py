@@ -28,7 +28,6 @@ def train_network(model, config, optimizer):
 
     # Train the model
     model.train()
-    print(model.device)
     total_step = len(train_loader)
     mse = torch.nn.MSELoss()
 
