@@ -37,7 +37,6 @@ def create_model(config, load=False, lr=False):
 
     if not load or len(files) == 0:
         config.current_epoch = 0
-        model.to(config.device)
         return model, config, optimizer
 
     filepath = files[-1]
@@ -58,5 +57,4 @@ def create_model(config, load=False, lr=False):
     else:
         optimizer.load_state_dict(loaded['optimizer'])
 
-    model.to(config.device)
     return model, config, optimizer
