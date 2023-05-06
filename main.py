@@ -12,6 +12,7 @@ import os
 
 from utils import create_model, save_model
 from dataloader import OnsetDataset
+from model import UNet
 
 
 def train_network(model, config, optimizer):
