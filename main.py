@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
 import pickle as pkl
 import json
 
@@ -17,8 +17,14 @@ from dataloader import OnsetDataset
 def train_network(model, config, optimizer):
     # create the dataset
     dataset = OnsetDataset(config, model.device)
-    train_loader = DataLoader(dataset, batch_size=16,
-                              shuffle=True, num_workers=0)
+
+    # split the dataset into train and test
+    train_size = int(len(dataset) * config.train_split)
+    test_size = len(dataset) - train_size
+    train_dataset, test_dataset = random_split(
+        dataset, [train_size, test_size])
+    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
     # Train the model
     model.train()
