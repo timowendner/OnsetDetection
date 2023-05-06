@@ -89,6 +89,7 @@ def main():
     model = model.to(device)
     if torch.cuda.is_available():
         model.cuda()
+    model.conv.weight = model.conv.weight.to(device)
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
