@@ -52,7 +52,7 @@ class UNet(nn.Module):
         # define the decoder
         self.up = []
         for channel in reversed(config.model_layers):
-            layer = up(last, channel * 2, scale=scale, kernel=kernel)
+            layer = up(last, channel, scale=scale, kernel=kernel)
             self.up.append(layer)
             last = channel * 2
 
