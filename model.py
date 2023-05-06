@@ -70,15 +70,20 @@ class UNet(nn.Module):
 
         print(next(self.parameters()).device)
         print(x.device)
+        print(self.down)
+        print(self.up)
+        print(self.output)
         # apply the encoder
         encoder = []
         for layer in self.down:
+            print(x.shape, layer)
             x = layer(x)
             encoder.append(x)
             x = self.pool(x)
 
         # apply the decoder
         for layer in self.up:
+            print(x.shape, layer)
             x = layer(x)
             x = torch.cat([encoder.pop(), x], 1)
 
