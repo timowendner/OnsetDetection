@@ -20,7 +20,7 @@ def save_model(model, optimizer, config):
 
     # define the config arguments to be saved
     change_config = ("data_length", "data_targetSD", "model_layers",
-                     "model_out", "model_kernel", "model_scale")
+                     "model_out", "model_kernel", "model_scale", 'current_epoch')
     change_config = {arg: getattr(config, arg) for arg in change_config}
 
     # save everything
