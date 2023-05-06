@@ -32,22 +32,16 @@ def create_model(config, load=False, lr=False):
     files = [join(config.model_path, f) for f in os.listdir(
         config.model_path) if isfile(join(config.model_path, f))]
     files = sorted(files, key=getmtime)
+    model = UNet(config)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 
     if not load or len(files) == 0:
-        model = UNet(config)
         config.current_epoch = 0
         return model, config, optimizer
 
     filepath = files[-1]
     print(f'Load model: {filepath}')
-
     loaded = torch.load(filepath)
-    model.load_state_dict(loaded['model'])
-    if lr:
-        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    else:
-        optimizer.load_state_dict(loaded['optimizer'])
 
     # copy the config file
     change_config = ("data_length", "data_targetSD", "model_layers",
@@ -55,5 +49,12 @@ def create_model(config, load=False, lr=False):
     for argument in change_config:
         value = getattr(loaded['config'], argument)
         setattr(config, argument, value)
+
+    model = UNet(config)
+    model.load_state_dict(loaded['model'])
+    if lr:
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    else:
+        optimizer.load_state_dict(loaded['optimizer'])
 
     return model, config, optimizer
