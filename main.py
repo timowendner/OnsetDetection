@@ -39,16 +39,16 @@ def test_network(model, dataset):
             targets_full = np.append(targets_full, targets[0, n:3*n])
             input_full = np.append(input_full, model_input[0, 0, n:3*n])
 
-        prediction_full = prediction_full[model_input.shape[2] // 2:]
-        targets_full = targets_full[model_input.shape[2] // 2:]
-        input_full = input_full[model_input.shape[2] // 2:]
+    prediction_full = prediction_full[model_input.shape[2] // 2:]
+    targets_full = targets_full[model_input.shape[2] // 2:]
+    input_full = input_full[model_input.shape[2] // 2:]
 
-        plt.figure(figsize=(10, 3))
-        plt.plot(input_full, label='model input')
-        plt.plot(prediction_full, label='prediction')
-        plt.plot(targets_full, label='target')
-        plt.legend()
-        plt.show()
+    plt.figure(figsize=(10, 3))
+    plt.plot(input_full, label='model input')
+    plt.plot(prediction_full, label='prediction')
+    plt.plot(targets_full, label='target')
+    plt.legend()
+    plt.show()
 
     # Calculate overall MSE
     return 1
@@ -80,21 +80,21 @@ def train_network(model, config, optimizer):
         print(
             f"Start Epoch: {epoch + 1}/{config.num_epochs}   {time_now}   (lr: {lr})")
 
-        # # loop through the training loader
-        # for i, (model_input, targets) in enumerate(train_loader):
-        #     # Forward pass
-        #     outputs = model(model_input)
-        #     loss = mse(outputs, targets)
+        # loop through the training loader
+        for i, (model_input, targets) in enumerate(train_loader):
+            # Forward pass
+            outputs = model(model_input)
+            loss = mse(outputs, targets)
 
-        #     # calculate gradients
-        #     optimizer.zero_grad()
-        #     loss.backward()
-        #     optimizer.step()
+            # calculate gradients
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
-        #     if (i + 1) % 50 == 0:
-        #         print(f'Epoch [{epoch + 1}/{config.num_epochs}]',
-        #               f'Step [{i + 1}/{total_step}]',
-        #               f'Loss: {loss.item():.4f}')
+            if (i + 1) % 50 == 0:
+                print(f'Epoch [{epoch + 1}/{config.num_epochs}]',
+                      f'Step [{i + 1}/{total_step}]',
+                      f'Loss: {loss.item():.4f}')
 
         # add the number of epochs
         config.current_epoch += 1
@@ -155,32 +155,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main()
-torch.Size([1, 490152])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
-torch.Size([1, 32768])
