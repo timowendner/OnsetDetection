@@ -24,11 +24,12 @@ def save_model(model, optimizer, config):
     change_config = {arg: getattr(config, arg) for arg in change_config}
 
     # save everything
-    torch.save({
-        'model': model.state_dict(),
-        'optimizer': optimizer.state_dict(),
-        'config': change_config,
-    }, filepath)
+    # torch.save({
+    #     'model': model.cpu().state_dict(),
+    #     'optimizer': optimizer.state_dict(),
+    #     'config': change_config,
+    # }, filepath)
+    model.to(config.device)
 
 
 def create_model(config, load=False, lr=False):

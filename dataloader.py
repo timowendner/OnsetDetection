@@ -65,3 +65,37 @@ class OnsetDataset(Dataset):
             targets = targets / torch.max(targets)
 
         return waveform.to(self.device), targets.to(self.device)
+
+    def getFull(self, idx):
+
+        waveform, sr, onsets = self.waveforms[idx]
+        zeros = torch.zeros((1, self.length // 2))
+        zeros2 = torch.zeros((1, self.length))
+        waveform = torch.cat((zeros, waveform, zeros2), dim=1)
+        onsets = [onset + self.length // 2 for onset in onsets]
+
+        targets = torch.zeros_like(waveform)
+        for onset in onsets:
+            current = torch.arange(0, waveform.shape[1])
+            current = 1 / (self.sigma * np.sqrt(2 * np.pi)) * \
+                np.exp(-0.5 * ((current - onset) / self.sigma)**2)
+            targets = torch.maximum(targets, current)
+
+        # normalize the targets
+        if onsets:
+            targets = targets / torch.max(targets)
+
+        waveform = waveform.to(self.device)
+        targets = targets.to(self.device)
+        waveform_list = []
+        target_list = []
+        for i in range(0, waveform.shape[1] - self.length,  self.length // 2):
+            waveform_list.append(waveform[:, i:i+self.length])
+            target_list.append(targets[:, i:i+self.length])
+
+        return waveform_list, target_list
+
+
+class OnsetFull(OnsetDataset):
+    def __getitem__(self, idx):
+        waveform, sr, onsets = self.waveforms[idx]
