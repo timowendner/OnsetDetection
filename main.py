@@ -43,10 +43,13 @@ def test_network(model, dataset):
     targets_full = targets_full[model_input.shape[2] // 2:]
     input_full = input_full[model_input.shape[2] // 2:]
 
+    # with open('datatomesswith.p', 'wb') as f:
+    #     pkl.dump((prediction_full, targets_full, input_full), f)
+
     plt.figure(figsize=(10, 3))
     plt.plot(input_full, label='model input')
-    plt.plot(prediction_full, label='prediction')
     plt.plot(targets_full, label='target')
+    plt.plot(prediction_full, label='prediction')
     plt.legend()
     plt.show()
 

@@ -48,7 +48,7 @@ def create_model(config, load=False, lr=False):
 
     filepath = files[-1]
     print(f'Load model: {filepath}')
-    loaded = torch.load(filepath)
+    loaded = torch.load(filepath, map_location=config.device)
 
     # copy the config file
     for argument, value in loaded['config'].items():
