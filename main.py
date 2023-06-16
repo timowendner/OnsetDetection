@@ -73,7 +73,7 @@ def test_network(model, dataset, pred=False):
 
         if pred:
             prediction_full, onsets = get_onsets(
-                prediction_full, sensitivity=0.45)
+                prediction_full, sensitivity=0.55)
             pred_list.append(
                 (prediction_full, targets_full, input_full, onsets))
 
@@ -167,6 +167,7 @@ class PredictDataset(OnsetDataset):
 
             # transform the text into float values
             onsets = [int(path[-6:-4])]
+            print(onsets)
             waveforms.append((waveform, sr, onsets))
 
         if len(waveforms) == 0:
