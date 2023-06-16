@@ -19,10 +19,10 @@ from dataloader import OnsetDataset
 from model import UNet
 
 
-def get_onsets(pred):
+def get_onsets(pred, val=0.35):
     for i in range(10):
         pred = pred ** 2
-        pred = 1 / (1 + np.e**(-50*(pred - 0.35**2)))
+        pred = 1 / (1 + np.e**(-50*(pred - val**2)))
 
     onsets = pred > 0.5
     mean = []
@@ -72,7 +72,7 @@ def test_network(model, dataset, pred=False):
         input_full = input_full[model_input.shape[2] // 2:]
 
         if pred:
-            prediction_full, onsets = get_onsets(prediction_full)
+            prediction_full, onsets = get_onsets(prediction_full, 0.45)
             pred_list.append(
                 (prediction_full, targets_full, input_full, onsets))
 
@@ -81,6 +81,8 @@ def test_network(model, dataset, pred=False):
             for i in onsets:
                 plt.axvline(x=i, color='black', linestyle=':', linewidth=2)
             plt.legend()
+            plt.xlim(0, len(prediction_full))
+            plt.title(f'data {idx}')
             plt.show()
 
     if pred:
