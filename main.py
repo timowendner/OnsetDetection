@@ -5,6 +5,8 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, random_split
 import pickle as pkl
 import json
+import glob
+import torchaudio
 
 import argparse
 import datetime
@@ -17,9 +19,35 @@ from dataloader import OnsetDataset
 from model import UNet
 
 
+def get_onsets(pred):
+    for i in range(10):
+        pred = pred ** 2
+        pred = 1 / (1 + np.e**(-50*(pred - 0.35**2)))
+
+    onsets = pred > 0.5
+    mean = []
+    count = 2500
+    predicitons = []
+    on = False
+    for i, onset in enumerate(onsets):
+        if onset:
+            mean.append(i)
+            on = True
+        elif count <= 0:
+            count = 2500
+            predicitons.append(mean[len(mean)//2])
+            on = False
+            mean = []
+        elif on:
+            count -= 1
+
+    return pred, predicitons
+
+
 @torch.no_grad()
-def test_network(model, dataset):
+def test_network(model, dataset, pred=False):
     model.eval()
+    pred_list = []
     for idx in range(len(dataset)):
         full = dataset.dataset.getFull(idx)
         prediction_full = np.array([])
@@ -39,12 +67,18 @@ def test_network(model, dataset):
             targets_full = np.append(targets_full, targets[0, n:3*n])
             input_full = np.append(input_full, model_input[0, 0, n:3*n])
 
-    prediction_full = prediction_full[model_input.shape[2] // 2:]
-    targets_full = targets_full[model_input.shape[2] // 2:]
-    input_full = input_full[model_input.shape[2] // 2:]
+        prediction_full = prediction_full[model_input.shape[2] // 2:]
+        targets_full = targets_full[model_input.shape[2] // 2:]
+        input_full = input_full[model_input.shape[2] // 2:]
 
-    # with open('datatomesswith.p', 'wb') as f:
-    #     pkl.dump((prediction_full, targets_full, input_full), f)
+        if pred:
+            prediction_full, onsets = get_onsets(prediction_full)
+            pred_list.append(
+                (prediction_full, targets_full, input_full, onsets))
+
+    if pred:
+        with open('predictions.p', 'wb') as f:
+            pkl.dump(pred_list, f)
 
     plt.figure(figsize=(10, 3))
     plt.plot(input_full, label='model input')
@@ -83,21 +117,21 @@ def train_network(model, config, optimizer):
         print(
             f"Start Epoch: {epoch + 1}/{config.num_epochs}   {time_now}   (lr: {lr})")
 
-        # loop through the training loader
-        for i, (model_input, targets) in enumerate(train_loader):
-            # Forward pass
-            outputs = model(model_input)
-            loss = mse(outputs, targets)
+        # # loop through the training loader
+        # for i, (model_input, targets) in enumerate(train_loader):
+        #     # Forward pass
+        #     outputs = model(model_input)
+        #     loss = mse(outputs, targets)
 
-            # calculate gradients
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+        #     # calculate gradients
+        #     optimizer.zero_grad()
+        #     loss.backward()
+        #     optimizer.step()
 
-            if (i + 1) % 50 == 0:
-                print(f'Epoch [{epoch + 1}/{config.num_epochs}]',
-                      f'Step [{i + 1}/{total_step}]',
-                      f'Loss: {loss.item():.4f}')
+        #     if (i + 1) % 50 == 0:
+        #         print(f'Epoch [{epoch + 1}/{config.num_epochs}]',
+        #               f'Step [{i + 1}/{total_step}]',
+        #               f'Loss: {loss.item():.4f}')
 
         # add the number of epochs
         config.current_epoch += 1
@@ -110,6 +144,28 @@ def train_network(model, config, optimizer):
             start_time = time.time()
 
     return model, config, optimizer
+
+
+class PredictDataset(OnsetDataset):
+    def __init__(self, config, data_path, device: torch.device):
+        files = glob.glob(os.path.join(data_path, '*.wav'))
+        waveforms = []
+        for path in files:
+            # load and normalize the audio file
+            waveform, sr = torchaudio.load(path)
+            waveform = waveform * 0.98 / torch.max(waveform)
+
+            # transform the text into float values
+            onsets = []
+            waveforms.append((waveform, sr, onsets))
+
+        if len(waveforms) == 0:
+            raise AttributeError('Data-path seems to be empty')
+
+        self.waveforms = waveforms
+        self.device = device
+        self.length = config.data_length
+        self.sigma = config.data_targetSD
 
 
 def main():
@@ -144,6 +200,11 @@ def main():
     if args.train:
         train_network(model, config, optimizer)
 
+    if args.test:
+        test_dataset = PredictDataset(config, args.test, device)
+        test_dataset, _ = random_split(test_dataset, [1, 0])
+        acc = test_network(model, test_dataset, pred=True)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
@@ -151,6 +212,8 @@ if __name__ == '__main__':
                         help='Train the model')
     parser.add_argument('--config_path', type=str,
                         help='Path to the configuration file')
+    parser.add_argument('--test', type=str, default=False,
+                        help='Path to the test files')
     parser.add_argument('--load', action='store_true',
                         help='load a model')
     parser.add_argument('--lr', type=float, default=False,
