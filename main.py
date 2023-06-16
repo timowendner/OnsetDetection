@@ -19,10 +19,10 @@ from dataloader import OnsetDataset
 from model import UNet
 
 
-def get_onsets(pred, val=0.35):
+def get_onsets(pred, sensitivity=0.35):
     for i in range(10):
         pred = pred ** 2
-        pred = 1 / (1 + np.e**(-50*(pred - val**2)))
+        pred = 1 / (1 + np.e**(-50*(pred - sensitivity**2)))
 
     onsets = pred > 0.5
     mean = []
@@ -72,7 +72,8 @@ def test_network(model, dataset, pred=False):
         input_full = input_full[model_input.shape[2] // 2:]
 
         if pred:
-            prediction_full, onsets = get_onsets(prediction_full, 0.45)
+            prediction_full, onsets = get_onsets(
+                prediction_full, sensitivity=0.45)
             pred_list.append(
                 (prediction_full, targets_full, input_full, onsets))
 
@@ -165,7 +166,7 @@ class PredictDataset(OnsetDataset):
             waveform = waveform * 0.98 / torch.max(waveform)
 
             # transform the text into float values
-            onsets = []
+            onsets = [int(path[-6:-4])]
             waveforms.append((waveform, sr, onsets))
 
         if len(waveforms) == 0:
