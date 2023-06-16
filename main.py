@@ -127,21 +127,21 @@ def train_network(model, config, optimizer):
         print(
             f"Start Epoch: {epoch + 1}/{config.num_epochs}   {time_now}   (lr: {lr})")
 
-        # # loop through the training loader
-        # for i, (model_input, targets) in enumerate(train_loader):
-        #     # Forward pass
-        #     outputs = model(model_input)
-        #     loss = mse(outputs, targets)
+        # loop through the training loader
+        for i, (model_input, targets) in enumerate(train_loader):
+            # Forward pass
+            outputs = model(model_input)
+            loss = mse(outputs, targets)
 
-        #     # calculate gradients
-        #     optimizer.zero_grad()
-        #     loss.backward()
-        #     optimizer.step()
+            # calculate gradients
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
-        #     if (i + 1) % 50 == 0:
-        #         print(f'Epoch [{epoch + 1}/{config.num_epochs}]',
-        #               f'Step [{i + 1}/{total_step}]',
-        #               f'Loss: {loss.item():.4f}')
+            if (i + 1) % 50 == 0:
+                print(f'Epoch [{epoch + 1}/{config.num_epochs}]',
+                      f'Step [{i + 1}/{total_step}]',
+                      f'Loss: {loss.item():.4f}')
 
         # add the number of epochs
         config.current_epoch += 1
@@ -232,3 +232,55 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main()
+
+
+['27',
+ '16',
+ '07',
+ '10',
+ '33',
+ '14',
+ '25',
+ '13',
+ '24',
+ '08',
+ '30',
+ '09',
+ '19',
+ '22',
+ '31',
+ '15',
+ '06',
+ '23',
+ '21',
+ '11',
+ '26',
+ '32',
+ '20',
+ '17',
+ '12',
+ '18',
+ '29',
+ '28',
+ '35',
+ '34',
+ '36',
+ '37',
+ '02',
+ '05',
+ '03',
+ '04',
+ '01',
+ '43',
+ '40',
+ '44',
+ '38',
+ '41',
+ '47',
+ '42',
+ '39',
+ '48',
+ '49',
+ '46',
+ '50',
+ '45',]
