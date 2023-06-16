@@ -167,7 +167,7 @@ class PredictDataset(OnsetDataset):
 
             # transform the text into float values
             onsets = [int(path[-6:-4])]
-            print(onsets)
+            print(path[-6:-4])
             waveforms.append((waveform, sr, onsets))
 
         if len(waveforms) == 0:
