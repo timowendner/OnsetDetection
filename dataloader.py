@@ -26,6 +26,9 @@ class OnsetDataset(Dataset):
             for i in text:
                 onsets.append(float(i.replace('\n', '')) * sr)
             waveforms.append((waveform, sr, onsets))
+        r = torch.randn_like(waveform)
+        r = r * 0.98 / torch.max(r)
+        waveforms.append((r, sr, []))
 
         if len(waveforms) == 0:
             raise AttributeError('Data-path seems to be empty')
