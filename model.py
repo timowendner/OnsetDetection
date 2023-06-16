@@ -69,7 +69,7 @@ class UNet(nn.Module):
             output.append(conv)
             output.append(nn.BatchNorm1d(channel))
             output.append(nn.Dropout1d(p=0.2))
-            output.append(nn.ReLU(inplace=True))
+            output.append(nn.ReLU())
             last = channel
         output.append(
             nn.Conv1d(last, 1, kernel_size=kernel, padding=kernel//2))
