@@ -33,6 +33,7 @@ def up(in_channel, out_channel, scale=2, kernel=9):
         nn.ConvTranspose1d(out_channel, out_channel,
                            kernel_size=scale, stride=scale),
         nn.BatchNorm1d(out_channel),
+        nn.Dropout1d(p=0.4),
         nn.ReLU(),
     )
 
@@ -67,7 +68,6 @@ class UNet(nn.Module):
             conv = nn.Conv1d(
                 last, channel, kernel_size=kernel, padding=kernel//2)
             output.append(conv)
-            output.append(nn.BatchNorm1d(channel))
             output.append(nn.Dropout1d(p=0.2))
             output.append(nn.ReLU())
             last = channel
