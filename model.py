@@ -7,12 +7,14 @@ def dual(in_channel, out_channel, kernel=9):
     return nn.Sequential(
         nn.Conv1d(in_channel, out_channel,
                   kernel_size=kernel, padding=kernel//2),
-        nn.Dropout1d(p=0.2),
-        nn.ReLU(inplace=True),
+        nn.BatchNorm1d(out_channel),
+        nn.Dropout1d(p=0.4),
+        nn.ReLU(),
         nn.Conv1d(out_channel, out_channel,
                   kernel_size=kernel, padding=kernel//2),
         nn.BatchNorm1d(out_channel),
-        nn.ReLU(inplace=True),
+        nn.Dropout1d(p=0.4),
+        nn.ReLU(),
     )
 
 
@@ -20,15 +22,18 @@ def up(in_channel, out_channel, scale=2, kernel=9):
     return nn.Sequential(
         nn.Conv1d(in_channel, in_channel,
                   kernel_size=kernel, padding=kernel//2),
-        nn.Dropout1d(p=0.2),
-        nn.ReLU(inplace=True),
+        nn.BatchNorm1d(out_channel),
+        nn.Dropout1d(p=0.4),
+        nn.ReLU(),
         nn.Conv1d(in_channel, out_channel,
                   kernel_size=kernel, padding=kernel//2),
-        nn.ReLU(inplace=True),
+        nn.BatchNorm1d(out_channel),
+        nn.Dropout1d(p=0.4),
+        nn.ReLU(),
         nn.ConvTranspose1d(out_channel, out_channel,
                            kernel_size=scale, stride=scale),
         nn.BatchNorm1d(out_channel),
-        nn.ReLU(inplace=True),
+        nn.ReLU(),
     )
 
 
@@ -62,6 +67,8 @@ class UNet(nn.Module):
             conv = nn.Conv1d(
                 last, channel, kernel_size=kernel, padding=kernel//2)
             output.append(conv)
+            output.append(nn.BatchNorm1d(channel))
+            output.append(nn.Dropout1d(p=0.2))
             output.append(nn.ReLU(inplace=True))
             last = channel
         output.append(
