@@ -42,9 +42,9 @@ class OnsetDataset(Dataset):
 
             waveforms.append((waveform, sr, targets))
 
-        r = torch.randn_like(waveform)
-        r = r * 0.98 / torch.max(r)
-        waveforms.append((r, sr, torch.zeros_like(r)))
+        # r = torch.randn_like(waveform)
+        # r = r * 0.98 / torch.max(r)
+        # waveforms.append((r, sr, torch.zeros_like(r)))
 
         if len(waveforms) == 0:
             raise AttributeError('Data-path seems to be empty')
@@ -77,17 +77,17 @@ class OnsetDataset(Dataset):
             noise = torch.randn_like(waveform) / np.random.uniform(8, 100)
             waveform += noise
 
-        if np.random.uniform() > 0.75:
-            threshold = np.random.uniform(0.4, 1)
-            ratio = np.random.uniform()
-            waveform[waveform > threshold] = threshold + \
-                (waveform[waveform > threshold] - threshold) * ratio
-            waveform = waveform * 0.98 / torch.max(waveform)
+        # if np.random.uniform() > 0.75:
+        #     threshold = np.random.uniform(0.4, 1)
+        #     ratio = np.random.uniform()
+        #     waveform[waveform > threshold] = threshold + \
+        #         (waveform[waveform > threshold] - threshold) * ratio
+        #     waveform = waveform * 0.98 / torch.max(waveform)
 
-        if np.random.uniform() > 0.75:
-            gain = np.random.normal(1, np.sqrt(0.5))
-            waveform *= gain
-            waveform = torch.clip(waveform, max=1)
+        # if np.random.uniform() > 0.75:
+        #     gain = np.random.normal(1, np.sqrt(0.5))
+        #     waveform *= gain
+        #     waveform = torch.clip(waveform, max=1)
 
         return waveform.to(self.device), targets.to(self.device)
 
