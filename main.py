@@ -134,6 +134,7 @@ def train_network(model, config, optimizer):
             # calculate gradients
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
             optimizer.step()
 
         # add the number of epochs
