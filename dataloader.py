@@ -60,6 +60,22 @@ class OnsetDataset(Dataset):
                 np.exp(-0.5 * ((current - onset) / self.sigma)**2)
             targets = torch.maximum(targets, current)
 
+        if np.random.uniform() > 0.85:
+            noise = torch.randn_like(waveform) / np.random.uniform(8, 100)
+            waveform += noise
+
+        if np.random.uniform() > 0.85:
+            threshold = np.random.uniform(0.4, 1)
+            ratio = np.random.uniform()
+            waveform[waveform > threshold] = threshold + \
+                (waveform[waveform > threshold] - threshold) * ratio
+            waveform = waveform * 0.98 / torch.max(waveform)
+
+        if np.random.uniform() > 0.85:
+            gain = np.random.normal(1, np.sqrt(0.5))
+            waveform *= gain
+            waveform = torch.clip(waveform, max=1)
+
         # normalize the targets
         if onsets:
             targets = targets / torch.max(targets)
