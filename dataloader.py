@@ -59,7 +59,7 @@ class OnsetDataset(Dataset):
 
         if np.random.uniform() > 0.75:
             threshold = np.random.uniform(0.4, 1)
-            ratio = np.uniform()
+            ratio = np.random.uniform()
             waveform[waveform > threshold] = threshold + \
                 (waveform[waveform > threshold] - threshold) * ratio
             waveform = waveform * 0.98 / torch.max(waveform)
