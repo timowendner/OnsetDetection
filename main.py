@@ -164,7 +164,7 @@ class PredictDataset(OnsetDataset):
             # transform the text into float values
             onsets = [int(path[-6:-4])]
             print(path[-6:-4])
-            waveforms.append((waveform, sr, onsets))
+            waveforms.append((waveform, sr, onsets, path))
 
         if len(waveforms) == 0:
             raise AttributeError('Data-path seems to be empty')
