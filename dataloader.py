@@ -28,10 +28,23 @@ class OnsetDataset(Dataset):
             onsets = []
             for i in text:
                 onsets.append(float(i.replace('\n', '')) * sr)
-            waveforms.append((waveform, sr, onsets))
+
+            # create the target vector with the resulting probabilities.
+            targets = torch.zeros_like(waveform)
+            for onset in onsets:
+                current = torch.arange(0, waveform.shape[1])
+                current = 1 / (self.sigma * np.sqrt(2 * np.pi)) * \
+                    np.exp(-0.5 * ((current - onset) / self.sigma)**2)
+                targets = torch.maximum(targets, current)
+
+            # normalize the targets
+            if onsets:
+                targets = targets / torch.max(targets)
+
+            waveforms.append((waveform, sr, targets))
         r = torch.randn((1, 2**15))
         r = r * 0.98 / torch.max(r)
-        waveforms.append((r, sr, []))
+        waveforms.append((r, sr, torch.zeros_like(r)))
 
         if len(waveforms) == 0:
             raise AttributeError('Data-path seems to be empty')
@@ -45,7 +58,7 @@ class OnsetDataset(Dataset):
         return len(self.waveforms)
 
     def __getitem__(self, idx):
-        waveform, sr, onsets = self.waveforms[idx]
+        waveform, sr, targets = self.waveforms[idx]
 
         if np.random.uniform() > 0.75:
             noise = torch.randn_like(waveform) / np.random.uniform(8, 100)
@@ -62,18 +75,6 @@ class OnsetDataset(Dataset):
             gain = np.random.normal(1, np.sqrt(0.5))
             waveform *= gain
             waveform = torch.clip(waveform, max=1)
-
-        # create the target vector with the resulting probabilities.
-        targets = torch.zeros_like(waveform)
-        for onset in onsets:
-            current = torch.arange(0, self.length)
-            current = 1 / (self.sigma * np.sqrt(2 * np.pi)) * \
-                np.exp(-0.5 * ((current - onset) / self.sigma)**2)
-            targets = torch.maximum(targets, current)
-
-        # normalize the targets
-        if onsets:
-            targets = targets / torch.max(targets)
 
         return waveform.to(self.device), targets.to(self.device)
 
