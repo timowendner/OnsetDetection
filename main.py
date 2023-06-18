@@ -128,7 +128,7 @@ def train_network(model, config, optimizer):
             f"Start Epoch: {epoch + 1}/{config.num_epochs}   {time_now}   (lr: {lr})")
 
         # loop through the training loader
-        for i, (model_input, targets) in enumerate(train_loader):
+        for i, (model_input, targets, path) in enumerate(train_loader):
             # Forward pass
             outputs = model(model_input)
             loss = mse(outputs, targets)
@@ -212,10 +212,10 @@ def main():
         train_network(model, config, optimizer)
 
     if args.test:
-        files = glob.glob(os.path.join(args.test, '*.wav'))
-        test_dataset = PredictDataset(config, args.test, device)
+        test_dataset = OnsetDataset(config, device, data_path=args.test)
         test_dataset, _ = random_split(test_dataset, [1, 0])
-        acc = test_network(model, test_dataset, pred=True)
+        test_loader = DataLoader(test_dataset, batch_size=16, shuffle=True)
+        acc = test_network(model, test_loader, pred=True)
 
 
 if __name__ == '__main__':
