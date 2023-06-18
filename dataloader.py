@@ -9,7 +9,7 @@ import os
 
 
 class OnsetDataset(Dataset):
-    def __init__(self, config, data_path, device: torch.device):
+    def __init__(self, config, device: torch.device, data_path=None):
         self.device = device
         self.length = config.data_length
         self.sigma = config.data_targetSD
