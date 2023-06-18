@@ -130,7 +130,6 @@ def train_network(model, config, optimizer):
         # loop through the training loader
         for i, (model_input, targets, path) in enumerate(train_loader):
             # Forward pass
-            print(model_input.shape, targets.shape, path)
             outputs = model(model_input)
             loss = mse(outputs, targets)
 
