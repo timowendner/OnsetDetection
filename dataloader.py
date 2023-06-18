@@ -10,6 +10,10 @@ import os
 
 class OnsetDataset(Dataset):
     def __init__(self, config, device: torch.device):
+        self.device = device
+        self.length = config.data_length
+        self.sigma = config.data_targetSD
+
         files = glob.glob(os.path.join(config.data_path, '*.wav'))
         waveforms = []
         for path in files:
@@ -50,9 +54,6 @@ class OnsetDataset(Dataset):
             raise AttributeError('Data-path seems to be empty')
 
         self.waveforms = waveforms
-        self.device = device
-        self.length = config.data_length
-        self.sigma = config.data_targetSD
 
     def __len__(self):
         return len(self.waveforms)
