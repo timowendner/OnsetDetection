@@ -124,9 +124,6 @@ def train_network(model, config, optimizer):
         time_now = datetime.datetime.now()
         time_now = time_now.strftime("%H:%M")
         lr = optimizer.param_groups[0]['lr']
-        print(f'Start Epoch: {epoch + 1}/{config.num_epochs}',
-              f'   {time_now}   (lr: {lr})',
-              f'Loss: {loss.item():.4f}')
 
         # loop through the training loader
         for i, (model_input, targets) in enumerate(train_loader):
@@ -141,6 +138,9 @@ def train_network(model, config, optimizer):
 
         # add the number of epochs
         config.current_epoch += 1
+        print(f'End Epoch: {epoch + 1}/{config.num_epochs}',
+              f'   {time_now}   (lr: {lr})',
+              f'Loss: {loss.item():.4f}')
 
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= config.save_time or epoch == config.num_epochs - 1:
