@@ -148,6 +148,10 @@ def train_network(model, config, optimizer):
             test_error = test_network(model, test_dataset)
             print(f'The test mse is: {test_error}')
             save_model(model, optimizer, config)
+            test_dataset = PredictDataset(
+                config, config.test_path, config.device)
+            test_dataset, _ = random_split(test_dataset, [1, 0])
+            acc = test_network(model, test_dataset, pred=True)
             start_time = time.time()
 
     return model, config, optimizer
@@ -207,11 +211,6 @@ def main():
     if args.train:
         train_network(model, config, optimizer)
 
-    if args.test:
-        test_dataset = PredictDataset(config, args.test, device)
-        test_dataset, _ = random_split(test_dataset, [1, 0])
-        acc = test_network(model, test_dataset, pred=True)
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
@@ -219,8 +218,6 @@ if __name__ == '__main__':
                         help='Train the model')
     parser.add_argument('--config_path', type=str,
                         help='Path to the configuration file')
-    parser.add_argument('--test', type=str, default=False,
-                        help='Path to the test files')
     parser.add_argument('--load', action='store_true',
                         help='load a model')
     parser.add_argument('--lr', type=float, default=False,
