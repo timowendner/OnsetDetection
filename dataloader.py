@@ -16,6 +16,9 @@ class OnsetDataset(Dataset):
             # load and normalize the audio file
             waveform, sr = torchaudio.load(path)
             waveform = waveform * 0.98 / torch.max(waveform)
+            padding = 2**int(
+                np.ceil(np.log2(waveform.shape[1]))) - waveform.shape[1]
+            waveform = torch.nn.functional.pad(waveform, (0, padding))
 
             # load the onsets file
             with open(path[:-4] + '.onsets.gt', 'r') as f:
@@ -26,7 +29,7 @@ class OnsetDataset(Dataset):
             for i in text:
                 onsets.append(float(i.replace('\n', '')) * sr)
             waveforms.append((waveform, sr, onsets))
-        r = torch.randn_like(waveform)
+        r = torch.randn(waveform)
         r = r * 0.98 / torch.max(r)
         waveforms.append((r, sr, []))
 
@@ -43,15 +46,6 @@ class OnsetDataset(Dataset):
 
     def __getitem__(self, idx):
         waveform, sr, onsets = self.waveforms[idx]
-
-        # find a random index and start from this point
-        index = np.random.randint(low=0, high=waveform.shape[1])
-
-        # create a waveform of specified length, with indexing and zero padding
-        waveform = torch.nn.functional.pad(
-            waveform[:, index: index + self.length],
-            (0, max(0, self.length + index - waveform.shape[1]))
-        )
 
         if np.random.uniform() > 0.75:
             noise = torch.randn_like(waveform) / np.random.uniform(8, 100)
@@ -70,8 +64,6 @@ class OnsetDataset(Dataset):
             waveform = torch.clip(waveform, max=1)
 
         # create the target vector with the resulting probabilities.
-        onsets = [onset - index for onset in onsets if index <=
-                  onset < index + self.length]
         targets = torch.zeros_like(waveform)
         for onset in onsets:
             current = torch.arange(0, self.length)
