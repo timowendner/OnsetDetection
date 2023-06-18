@@ -4,7 +4,7 @@
     "model_path": "/Users/timowendner/Programming/Semester 4/Music Processing/models",
     "output_path": "/Users/timowendner/Programming/Semester 4/Music Processing/output",
     "data_length": 32768,
-    "data_targetSD": 500,
+    "data_targetSD": 50,
     "model_layers": [16, 16, 16],
     "model_out": [16, 16, 16],
     "model_kernel": 9,

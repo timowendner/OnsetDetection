@@ -12,7 +12,6 @@ class OnsetDataset(Dataset):
     def __init__(self, config, device: torch.device, data_path=None):
         self.device = device
         self.length = config.data_length
-        self.sigma = config.data_targetSD
 
         files = config.data_path if data_path is None else data_path
         files = glob.glob(os.path.join(files, '*.wav'))
@@ -36,15 +35,17 @@ class OnsetDataset(Dataset):
 
             # create the target vector with the resulting probabilities.
             targets = torch.zeros_like(waveform)
+            k = config.data_targetSD
             for onset in onsets:
-                current = torch.arange(0, waveform.shape[1])
-                current = 1 / (self.sigma * np.sqrt(2 * np.pi)) * \
-                    np.exp(-0.5 * ((current - onset) / self.sigma)**2)
-                targets = torch.maximum(targets, current)
-
-            # normalize the targets
-            if onsets:
-                targets = targets / torch.max(targets)
+                onset = int(onset)
+                value = torch.arange(2*k + 1, dtype=float) - k
+                value = 1 - (torch.abs(value) / k)**2
+                smaller = max(0, onset - k)
+                bigger = min(targets.shape[1], onset + k + 1)
+                r = bigger - smaller
+                value = value[k - (onset - smaller): k + bigger - onset]
+                value = torch.max(value, targets[:, smaller: bigger])
+                targets[:, smaller: bigger] = value
 
             waveforms.append((waveform, sr, targets, path))
         r = torch.randn((1, 2**15))

@@ -110,8 +110,8 @@ def train_network(model, config, optimizer):
     test_size = len(dataset) - train_size
     train_dataset, test_dataset = random_split(
         dataset, [train_size, test_size])
-    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
     # Train the model
     model.train()
@@ -130,6 +130,7 @@ def train_network(model, config, optimizer):
         # loop through the training loader
         for i, (model_input, targets, path) in enumerate(train_loader):
             # Forward pass
+            print(model_input.shape, targets.shape, path)
             outputs = model(model_input)
             loss = mse(outputs, targets)
 
@@ -214,7 +215,7 @@ def main():
     if args.test:
         test_dataset = OnsetDataset(config, device, data_path=args.test)
         test_dataset, _ = random_split(test_dataset, [1, 0])
-        test_loader = DataLoader(test_dataset, batch_size=16, shuffle=True)
+        test_loader = DataLoader(test_dataset, batch_size=1, shuffle=True)
         acc = test_network(model, test_loader, pred=True)
 
 
