@@ -47,9 +47,9 @@ def get_onsets(pred, sensitivity=0.35):
 @torch.no_grad()
 def test_network(model, dataset, pred=False):
     model.eval()
-    pred_list = []
+    pred_list = {}
     for idx in range(len(dataset)):
-        full = dataset.dataset.getFull(idx)
+        *full, path = dataset.dataset.getFull(idx)
         prediction_full = np.array([])
         targets_full = np.array([])
         input_full = np.array([])
@@ -74,8 +74,8 @@ def test_network(model, dataset, pred=False):
         if pred:
             prediction_full, onsets = get_onsets(
                 prediction_full, sensitivity=0.55)
-            pred_list.append(
-                (prediction_full, targets_full, input_full, onsets))
+            pred_list[path] = (
+                prediction_full, targets_full, input_full, onsets)
 
             plt.figure(figsize=(15, 3))
             plt.plot(input_full, label='model input')

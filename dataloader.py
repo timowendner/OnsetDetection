@@ -9,8 +9,9 @@ import os
 
 
 class OnsetDataset(Dataset):
-    def __init__(self, config, device: torch.device):
-        files = glob.glob(os.path.join(config.data_path, '*.wav'))
+    def __init__(self, config, device: torch.device, data_path=None):
+        data_path = config.data_path if data_path is None else data_path
+        files = glob.glob(os.path.join(data_path, '*.wav'))
         waveforms = []
         for path in files:
             # load and normalize the audio file
@@ -25,7 +26,7 @@ class OnsetDataset(Dataset):
             onsets = []
             for i in text:
                 onsets.append(float(i.replace('\n', '')) * sr)
-            waveforms.append((waveform, sr, onsets))
+            waveforms.append((waveform, sr, onsets, path))
 
         if len(waveforms) == 0:
             raise AttributeError('Data-path seems to be empty')
@@ -39,7 +40,7 @@ class OnsetDataset(Dataset):
         return len(self.waveforms)
 
     def __getitem__(self, idx):
-        waveform, sr, onsets = self.waveforms[idx]
+        waveform, sr, onsets, path = self.waveforms[idx]
 
         # find a random index and start from this point
         index = np.random.randint(low=0, high=waveform.shape[1])
@@ -84,7 +85,7 @@ class OnsetDataset(Dataset):
 
     def getFull(self, idx):
 
-        waveform, sr, onsets = self.waveforms[idx]
+        waveform, sr, onsets, path = self.waveforms[idx]
         zeros = torch.zeros((1, self.length // 2))
         zeros2 = torch.zeros((1, self.length))
         waveform = torch.cat((zeros, waveform, zeros2), dim=1)
@@ -109,7 +110,7 @@ class OnsetDataset(Dataset):
             waveform_list.append(waveform[:, i:i+self.length])
             target_list.append(targets[:, i:i+self.length])
 
-        return waveform_list, target_list
+        return waveform_list, target_list, path
 
 
 class OnsetFull(OnsetDataset):
