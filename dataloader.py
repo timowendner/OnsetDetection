@@ -73,9 +73,8 @@ class OnsetDataset(Dataset):
             waveform = waveform * 0.98 / torch.max(waveform)
 
         if np.random.uniform() > 0.85:
-            gain = np.random.normal(1, np.sqrt(0.5))
+            gain = np.random.uniform(0.8, 1.2)
             waveform *= gain
-            waveform = torch.clip(waveform, max=1)
 
         # normalize the targets
         if onsets:
