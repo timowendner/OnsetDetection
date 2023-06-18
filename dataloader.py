@@ -29,7 +29,7 @@ class OnsetDataset(Dataset):
             for i in text:
                 onsets.append(float(i.replace('\n', '')) * sr)
             waveforms.append((waveform, sr, onsets))
-        r = torch.randn(waveform)
+        r = torch.randn((1, 2**15))
         r = r * 0.98 / torch.max(r)
         waveforms.append((r, sr, []))
 
