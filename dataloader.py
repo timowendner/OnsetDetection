@@ -14,7 +14,7 @@ class OnsetDataset(Dataset):
         self.length = config.data_length
         self.sigma = config.data_targetSD
 
-        files = config.data_path if data_path is not None else data_path
+        files = config.data_path if data_path is None else data_path
         files = glob.glob(os.path.join(files, '*.wav'))
         waveforms = []
         for path in files:
