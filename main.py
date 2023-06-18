@@ -124,24 +124,20 @@ def train_network(model, config, optimizer):
         time_now = datetime.datetime.now()
         time_now = time_now.strftime("%H:%M")
         lr = optimizer.param_groups[0]['lr']
-        print(
-            f"Start Epoch: {epoch + 1}/{config.num_epochs}   {time_now}   (lr: {lr})")
+        print(f'Start Epoch: {epoch + 1}/{config.num_epochs}',
+              f'   {time_now}   (lr: {lr})',
+              f'Loss: {loss.item():.4f}')
 
-        # # loop through the training loader
-        # for i, (model_input, targets) in enumerate(train_loader):
-        #     # Forward pass
-        #     outputs = model(model_input)
-        #     loss = mse(outputs, targets)
+        # loop through the training loader
+        for i, (model_input, targets) in enumerate(train_loader):
+            # Forward pass
+            outputs = model(model_input)
+            loss = mse(outputs, targets)
 
-        #     # calculate gradients
-        #     optimizer.zero_grad()
-        #     loss.backward()
-        #     optimizer.step()
-
-        #     if (i + 1) % 50 == 0:
-        #         print(f'Epoch [{epoch + 1}/{config.num_epochs}]',
-        #               f'Step [{i + 1}/{total_step}]',
-        #               f'Loss: {loss.item():.4f}')
+            # calculate gradients
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
         # add the number of epochs
         config.current_epoch += 1
