@@ -97,18 +97,7 @@ class OnsetDataset(Dataset):
         zeros = torch.zeros((1, self.length // 2))
         zeros2 = torch.zeros((1, self.length))
         waveform = torch.cat((zeros, waveform, zeros2), dim=1)
-        onsets = [onset + self.length // 2 for onset in onsets]
-
-        targets = torch.zeros_like(waveform)
-        for onset in onsets:
-            current = torch.arange(0, waveform.shape[1])
-            current = 1 / (self.sigma * np.sqrt(2 * np.pi)) * \
-                np.exp(-0.5 * ((current - onset) / self.sigma)**2)
-            targets = torch.maximum(targets, current)
-
-        # normalize the targets
-        if onsets:
-            targets = targets / torch.max(targets)
+        targets = torch.cat((zeros, targets, zeros2), dim=1)
 
         waveform = waveform.to(self.device)
         targets = targets.to(self.device)
