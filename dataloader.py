@@ -93,7 +93,7 @@ class OnsetDataset(Dataset):
 
     def getFull(self, idx):
 
-        waveform, sr, onsets = self.waveforms[idx]
+        waveform, sr, targets = self.waveforms[idx]
         zeros = torch.zeros((1, self.length // 2))
         zeros2 = torch.zeros((1, self.length))
         waveform = torch.cat((zeros, waveform, zeros2), dim=1)
