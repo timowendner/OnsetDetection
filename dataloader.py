@@ -66,8 +66,8 @@ class OnsetDataset(Dataset):
             waveform += noise
 
         if np.random.uniform() > 0.85:
-            threshold = np.random.uniform(0.4, 1)
-            ratio = np.random.uniform()
+            threshold = np.random.uniform(0.6, 1)
+            ratio = np.random.uniform(0.1, 0.8)
             waveform[waveform > threshold] = threshold + \
                 (waveform[waveform > threshold] - threshold) * ratio
             waveform = waveform * 0.98 / torch.max(waveform)
