@@ -25,11 +25,10 @@ def save_model(model, optimizer, config):
 
     # save everything
     torch.save({
-        'model': model.cpu().state_dict(),
+        'model': model.state_dict(),
         'optimizer': optimizer.state_dict(),
         'config': change_config,
     }, filepath)
-    model.to(config.device)
 
 
 def create_model(config, load=False, lr=False):
@@ -56,6 +55,7 @@ def create_model(config, load=False, lr=False):
 
     model = UNet(config).to(config.device)
     model.load_state_dict(loaded['model'])
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
     if lr:
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     else:

@@ -212,6 +212,7 @@ def main():
         train_network(model, config, optimizer)
 
     if args.test:
+        files = glob.glob(os.path.join(args.test, '*.wav'))
         test_dataset = PredictDataset(config, args.test, device)
         test_dataset, _ = random_split(test_dataset, [1, 0])
         acc = test_network(model, test_dataset, pred=True)
@@ -232,55 +233,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main()
-
-
-['27',
- '16',
- '07',
- '10',
- '33',
- '14',
- '25',
- '13',
- '24',
- '08',
- '30',
- '09',
- '19',
- '22',
- '31',
- '15',
- '06',
- '23',
- '21',
- '11',
- '26',
- '32',
- '20',
- '17',
- '12',
- '18',
- '29',
- '28',
- '35',
- '34',
- '36',
- '37',
- '02',
- '05',
- '03',
- '04',
- '01',
- '43',
- '40',
- '44',
- '38',
- '41',
- '47',
- '42',
- '39',
- '48',
- '49',
- '46',
- '50',
- '45',]

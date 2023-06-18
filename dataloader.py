@@ -54,16 +54,20 @@ class OnsetDataset(Dataset):
         )
 
         if np.random.uniform() > 0.75:
+            noise = torch.randn_like(waveform) / np.random.uniform(8, 100)
+            waveform += noise
+
+        if np.random.uniform() > 0.75:
+            threshold = np.random.uniform(0.4, 1)
+            ratio = np.uniform()
+            waveform[waveform > threshold] = threshold + \
+                (waveform[waveform > threshold] - threshold) * ratio
+            waveform = waveform * 0.98 / torch.max(waveform)
+
+        if np.random.uniform() > 0.75:
             gain = np.random.normal(1, np.sqrt(0.5))
             waveform *= gain
             waveform = torch.clip(waveform, max=1)
-
-        if np.random.uniform() > 0.75:
-            threshold = np.random.uniform(0.4, 0.8)
-            ratio = 0.5
-            above_threshold = torch.relu(waveform - threshold)
-            waveform = torch.where(
-                above_threshold > 0, threshold + above_threshold / ratio, waveform)
 
         # create the target vector with the resulting probabilities.
         onsets = [onset - index for onset in onsets if index <=
