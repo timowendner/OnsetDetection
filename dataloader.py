@@ -9,12 +9,13 @@ import os
 
 
 class OnsetDataset(Dataset):
-    def __init__(self, config, device: torch.device):
+    def __init__(self, config, data_path, device: torch.device):
         self.device = device
         self.length = config.data_length
         self.sigma = config.data_targetSD
 
-        files = glob.glob(os.path.join(config.data_path, '*.wav'))
+        files = config.data_path if data_path is not None else data_path
+        files = glob.glob(os.path.join(files, '*.wav'))
         waveforms = []
         for path in files:
             # load and normalize the audio file
@@ -45,10 +46,10 @@ class OnsetDataset(Dataset):
             if onsets:
                 targets = targets / torch.max(targets)
 
-            waveforms.append((waveform, sr, targets))
+            waveforms.append((waveform, sr, targets, path))
         r = torch.randn((1, 2**15))
         r = r * 0.98 / torch.max(r)
-        waveforms.append((r, sr, torch.zeros_like(r)))
+        waveforms.append((r, sr, torch.zeros_like(r), 'none'))
 
         if len(waveforms) == 0:
             raise AttributeError('Data-path seems to be empty')
@@ -59,7 +60,7 @@ class OnsetDataset(Dataset):
         return len(self.waveforms)
 
     def __getitem__(self, idx):
-        waveform, sr, targets = self.waveforms[idx]
+        waveform, sr, targets, path = self.waveforms[idx]
 
         if np.random.uniform() > 0.75:
             noise = torch.randn_like(waveform) / np.random.uniform(8, 100)
@@ -77,38 +78,4 @@ class OnsetDataset(Dataset):
             waveform *= gain
             waveform = torch.clip(waveform, max=1)
 
-        return waveform.to(self.device), targets.to(self.device)
-
-    def getFull(self, idx):
-
-        waveform, sr, onsets = self.waveforms[idx]
-        zeros = torch.zeros((1, self.length // 2))
-        zeros2 = torch.zeros((1, self.length))
-        waveform = torch.cat((zeros, waveform, zeros2), dim=1)
-        onsets = [onset + self.length // 2 for onset in onsets]
-
-        targets = torch.zeros_like(waveform)
-        for onset in onsets:
-            current = torch.arange(0, waveform.shape[1])
-            current = 1 / (self.sigma * np.sqrt(2 * np.pi)) * \
-                np.exp(-0.5 * ((current - onset) / self.sigma)**2)
-            targets = torch.maximum(targets, current)
-
-        # normalize the targets
-        if onsets:
-            targets = targets / torch.max(targets)
-
-        waveform = waveform.to(self.device)
-        targets = targets.to(self.device)
-        waveform_list = []
-        target_list = []
-        for i in range(0, waveform.shape[1] - self.length,  self.length // 2):
-            waveform_list.append(waveform[:, i:i+self.length])
-            target_list.append(targets[:, i:i+self.length])
-
-        return waveform_list, target_list
-
-
-class OnsetFull(OnsetDataset):
-    def __getitem__(self, idx):
-        waveform, sr, onsets = self.waveforms[idx]
+        return waveform.to(self.device), targets.to(self.device), path
