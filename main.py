@@ -151,10 +151,11 @@ def train_network(model, config, optimizer):
             test_error = test_network(model, test_dataset)
             print(f'The test mse is: {test_error}')
             save_model(model, optimizer, config)
-            test_dataset = PredictDataset(
+            test_dataset_predict = PredictDataset(
                 config, config.test_path, config.device)
-            test_dataset, _ = random_split(test_dataset, [1, 0])
-            acc = test_network(model, test_dataset, pred=True)
+            test_dataset_predict, _ = random_split(
+                test_dataset_predict, [1, 0])
+            acc = test_network(model, test_dataset_predict, pred=True)
             start_time = time.time()
 
     return model, config, optimizer
