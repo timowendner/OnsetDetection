@@ -6,3 +6,5 @@ models/
 datatomesswith.p
 musicprocessing.ipynb
 predictions.p
+__pycache__/
+predictionsgood.p

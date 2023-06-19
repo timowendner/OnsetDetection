@@ -72,7 +72,7 @@ def test_network(model, dataset, pred=False):
         input_full = input_full[model_input.shape[2] // 2:]
 
         if pred:
-            prediction_full, onsets = get_onsets(
+            prediction_, onsets = get_onsets(
                 prediction_full, sensitivity=0.55)
             pred_list[path] = (
                 prediction_full, targets_full, input_full, onsets)
@@ -198,6 +198,8 @@ def main():
 
     # set the device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device(
+        "mps") if torch.backends.mps.is_available() else device
     config.device = device
 
     # create the model
