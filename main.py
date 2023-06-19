@@ -110,8 +110,8 @@ def train_network(model, config, optimizer):
     test_size = len(dataset) - train_size
     train_dataset, test_dataset = random_split(
         dataset, [train_size, test_size])
-    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
 
     # Train the model
     model.train()
