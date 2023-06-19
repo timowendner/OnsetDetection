@@ -9,7 +9,7 @@ import os
 
 
 class OnsetDataset(Dataset):
-    def __init__(self, config, device: torch.device, data_path=None):
+    def __init__(self, config, device: torch.device, data_path=None, beats=False):
         data_path = config.data_path if data_path is None else data_path
         files = glob.glob(os.path.join(data_path, '*.wav'))
         waveforms = []
@@ -19,8 +19,21 @@ class OnsetDataset(Dataset):
             waveform = waveform * 0.98 / torch.max(waveform)
 
             # load the onsets file
-            with open(path[:-4] + '.onsets.gt', 'r') as f:
-                text = f.readlines()
+            if beats:
+                beats_path = path[:-4] + '.beats.gt'
+                if not os.path.isfile(beats_path):
+                    continue
+
+                with open(path[:-4] + '.beats.gt', 'r') as f:
+                    text = f.readlines()
+                    text = [t.split('\t')[0] for t in text]
+            else:
+                onset_path = path[:-4] + '.onsets.gt'
+                if not os.path.isfile(onset_path):
+                    continue
+
+                with open(path[:-4] + '.onsets.gt', 'r') as f:
+                    text = f.readlines()
 
             # transform the text into float values
             onsets = []

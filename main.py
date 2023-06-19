@@ -103,7 +103,7 @@ def test_network(model, dataset, pred=False):
 
 def train_network(model, config, optimizer):
     # create the dataset
-    dataset = OnsetDataset(config, config.device)
+    dataset = OnsetDataset(config, config.device, beats=args.beats)
 
     # split the dataset into train and test
     train_size = int(len(dataset) * config.train_split)
@@ -222,6 +222,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
     parser.add_argument('--train', action='store_true',
                         help='Train the model')
+    parser.add_argument('--beats', action='store_true', default=False,
+                        help='Train the model for beats')
     parser.add_argument('--config_path', type=str,
                         help='Path to the configuration file')
     parser.add_argument('--load', action='store_true',
