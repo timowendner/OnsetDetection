@@ -130,11 +130,14 @@ def train_network(model, config, optimizer):
             # Forward pass
             outputs = model(model_input)
             loss = mse(outputs, targets)
+            if loss.item() == np.nan:
+                print(model_input, targets)
 
             # calculate gradients
             optimizer.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
+            torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=5.0)
             optimizer.step()
 
         # add the number of epochs
