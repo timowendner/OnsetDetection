@@ -77,14 +77,14 @@ def test_network(model, dataset, pred=False):
             pred_list[path] = (
                 prediction_full, targets_full, input_full, onsets)
 
-            plt.figure(figsize=(15, 3))
-            plt.plot(input_full, label='model input')
-            for i in onsets:
-                plt.axvline(x=i, color='black', linestyle=':', linewidth=2)
-            plt.legend()
-            plt.xlim(0, len(prediction_full))
-            plt.title(f'data {idx}')
-            plt.show()
+            # plt.figure(figsize=(15, 3))
+            # plt.plot(input_full, label='model input')
+            # for i in onsets:
+            #     plt.axvline(x=i, color='black', linestyle=':', linewidth=2)
+            # plt.legend()
+            # plt.xlim(0, len(prediction_full))
+            # plt.title(f'data {idx}')
+            # plt.show()
 
     if pred:
         with open('predictions.p', 'wb') as f:
