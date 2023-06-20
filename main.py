@@ -19,29 +19,32 @@ from dataloader import OnsetDataset
 from model import UNet
 
 
-def get_onsets(pred, sensitivity=0.35):
-    for i in range(10):
-        pred = pred ** 2
-        pred = 1 / (1 + np.e**(-50*(pred - sensitivity**2)))
+def get_onsets(pred, sr, sensitivity=0.35, c=4500):
+    pred = pred / np.max(pred)
+    onsets = pred > np.mean(pred) + sensitivity
 
-    onsets = pred > 0.5
-    mean = []
-    count = 2500
-    predicitons = []
-    on = False
+    cur = []
+    predictions = []
     for i, onset in enumerate(onsets):
         if onset:
-            mean.append(i)
-            on = True
-        elif count <= 0:
-            count = 2500
-            predicitons.append(mean[len(mean)//2])
-            on = False
-            mean = []
-        elif on:
-            count -= 1
+            cur.append(i)
+            continue
+        if cur:
+            predictions.append(sorted(cur, key=lambda x: pred[x])[-1])
+            cur = []
 
-    return pred, predicitons
+    predictions = set(predictions)
+    for _ in range(10):
+        loop = sorted(predictions)
+        last = -c * 2
+        for val in loop:
+            if val - last < c:
+                r = sorted((val, last), key=lambda x: pred[x])[0]
+                if r in predictions:
+                    predictions.remove(r)
+            last = val
+    predictions = sorted([max(0, p-5) / sr for p in predictions])
+    return pred, predictions
 
 
 @torch.no_grad()
@@ -72,8 +75,7 @@ def test_network(model, dataset, pred=False):
         input_full = input_full[model_input.shape[2] // 2:]
 
         if pred:
-            prediction_, onsets = get_onsets(
-                prediction_full, sensitivity=0.55)
+            prediction_, onsets = get_onsets(prediction_full, sr=44100)
             pred_list[path] = (
                 prediction_full, targets_full, input_full, onsets)
 

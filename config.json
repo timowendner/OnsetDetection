@@ -1,16 +1,17 @@
 {
-    "model_name": "start",
-    "data_path": "/Users/timowendner/Programming/Semester 4/Music Processing/train",
-    "model_path": "/Users/timowendner/Programming/Semester 4/Music Processing/models",
-    "output_path": "/Users/timowendner/Programming/Semester 4/Music Processing/output",
+    "model_name": "onset",
+    "data_path": "/content/drive/MyDrive/Share/Onset/dataset",
+    "test_path": "/content/drive/MyDrive/Share/Onset/test",
+    "model_path": "/content/drive/MyDrive/Share/Onset/model",
+    "output_path": "/content/drive/MyDrive/Share/Onset/output",
     "data_length": 32768,
-    "data_targetSD": 500,
-    "model_layers": [16, 16, 16],
-    "model_out": [16, 16, 16],
+    "data_targetSD": 300,
+    "model_layers": [32, 64, 96],
+    "model_out": [96, 96, 64, 32],
     "model_kernel": 9,
-    "model_scale": 4,
-    "lr": 0.001,
-    "save_time": 0,
+    "model_scale": 2,
+    "lr": 0.0001,
+    "save_time": 500,
     "train_split": 0.95,
-    "num_epochs": 1
+    "num_epochs": 10000
 }
